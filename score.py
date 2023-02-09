@@ -1,32 +1,36 @@
 from turtle import Turtle
 ALIGNMENT = "center"
-FONT = ('Arial', 10, 'normal')
+FONT = ("Courier", 24, "normal")
 
-class Score(Turtle):
 
-  # inheritance: snake is a turtle, food is a food which inherits from turtle
-  def __init__(self):
-    super().__init__()
-    self.score = 0
-    self.hideturtle()
-    self.penup()
-    self.pencolor("white")
-    self.setposition(-270, 270)
-    self.display()
+class Scoreboard(Turtle):
 
-  def display(self):
-    self.clear()
-    self.write(f"Score: {self.score}", False, align = ALIGNMENT, font = FONT)
+    def __init__(self):
+        super().__init__()
+        self.score = 0
+        with open("data.txt") as file:
+            highest = file.read()
+        self.high_score = int(highest)
+        self.color("white")
+        self.penup()
+        self.goto(0, 270)
+        self.hideturtle()
+        self.update_scoreboard()
 
-  def keep_score(self):
-    self.score += 1
-    self.display()
-    # print(self.score)
+    def update_scoreboard(self):
+        self.clear()
+        self.write(f"Score: {self.score} High Score: {self.high_score}", align=ALIGNMENT, font=FONT)
 
-  def game_over(self):
-    self.goto(0,0)
-    self.write("GAME OVER", align = ALIGNMENT, font = FONT)
-  # def refresh(self):
-  #   self.setposition(-0, 270)
-  #   # self.display()
-    
+    def reset(self):
+        if self.score > self.high_score:
+            self.high_score = self.score
+            with open("data.txt", mode="w") as file:
+                file.write(str(self.high_score))
+                # file.write(f"{self.high_score")
+        self.score = 0
+        self.update_scoreboard()
+
+    def increase_score(self):
+        self.score += 1
+        self.clear()
+        self.update_scoreboard()
