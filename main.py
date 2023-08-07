@@ -1,7 +1,5 @@
-from turtle import Screen
-from snake import Snake
-from food import Food
-from score import Score
+from turtle import Turtle, Screen
+# from snake import Snake
 import time
 
 screen = Screen()
@@ -11,52 +9,36 @@ screen.title("Snake Game")
 # when tracer is off (0) nothing prints, screen wont refresh until you call update
 screen.tracer(0)
 
-# oop so if anything goes wrong you know where the problem is
-snake = Snake()
-food = Food()
-scoreboard = Score()
+segments = []
+for _ in range(3):
+  snake_seg = Turtle()
+  snake_seg.shape("square")
+  snake_seg.color("white")
+  # snake_seg.setx(10-(_*20))
+  snake_seg.penup()
+  snake_seg.setx(-(_*20))
+  segments.append(snake_seg)
+# update after snake printed so it will not show up piece by piece, all displayed at once
 
-# listen to accept user feedback
-screen.listen()
-screen.onkey(snake.up, "Up")
-screen.onkey(snake.down, "Down")
-screen.onkey(snake.left, "Left")
-screen.onkey(snake.right, "Right")
 
 game_on = True
 while game_on:
-  screen.update()
+  #move each segment, loop through each segment and move it forward by an ammount
+  screen.update() # snake moves as one piece, all 3 segments forward before update triggered
+  # move delay up here so only delays after all 3 pieces moved forward
   time.sleep(.1)
+  # for seg in segments:
+  #   seg.forward(10)
+  #   # # adds 1s delay after each piece moves
+  #   # time.sleep(1)
+  # replace above for loop with below because above only lets snake move forward, instead have each segment move to where segment before was
+  # for seg_num in range(start=len(segments) -1, stop=0, step= -1):
+  for seg_num in range(len(segments) -1, 0, -1):
+    new_x = segments[seg_num -1].xcor()
+    new_y = segments[seg_num -1].ycor()
+    segments[seg_num].goto(new_x, new_y)
 
-  snake.move()
-
-  # detect collision with food
-  # distance from first turtle segment in snake to food item (which inherits from turtle)
-  if snake.head.distance(food) < 15:
-    scoreboard.keep_score()
-    food.refresh()
-    snake.grow()
-
-  # detect collision with wall
-  if snake.head.xcor() > 280 or snake.head.ycor() > 280 or snake.head.xcor() < -280 or snake.head.ycor() < -280:
-    game_on = False
-    scoreboard.game_over()
-
-  # detect collision with tail
-  # slice instead of using if statement to avoid checking against first segment
-  for segment in snake.segments[1:]:
-    if snake.head.distance(segment) < 10:
-      game_on = False
-      scoreboard.game_over()
-      
-  # for segment in snake.segments:
-  #   if segment == snake.head():
-  #     pass
-  #     # otherwise head is always within 10  pixels of snake segment
-  #   elif snake.head.distance(segment) < 10:
-  #     game_on = False
-  #     scoreboard.game_over()
-
-
+  segments[0].forward(20)
+  
 
 screen.exitonclick()
